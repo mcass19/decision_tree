@@ -22,6 +22,8 @@ class Gain(object):
 
         return entropy
 
+    def calculate_gain(self, attribute, value):
+
     # attributes está pensado como una lista de listas, donde por ejemplo el atributo en la posición
     # 0 tiene una lista con sus posibles valores 
     def calculate_max_gain(self, data_set, attributes):
