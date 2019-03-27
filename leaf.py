@@ -1,7 +1,6 @@
 class Decision_tree_leaf (object):
-	def __init__(self, data, classification):
-		self.data = data
+	def __init__(self, classification):
 		self.classification = classification
 
 	def print(self, level):
-		print('-'*level + str(self.data) + ' ' + str(self.classification))
+		print(str(self.classification))

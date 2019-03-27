@@ -1,19 +1,18 @@
 from leaf import Decision_tree_leaf
 
 class Decision_tree_node (object):
-	def __init__ (self, att, data):
+	def __init__ (self, att):
 		self.attribute = att
-		self.data = data
 		self._children = []
 
 	def add_children_node(self, children_attribute, children_data):
-		children_node = Decision_tree_node(children_attribute, children_data)
-		self._children.append(children_node)
+		children_node = Decision_tree_node(children_attribute)
+		self._children.append((children_node, children_data))
 		return children_node
 
 	def add_children_leaf(self, children_data, children_classification):
-		children_leaf = Decision_tree_leaf(children_data, children_classification) 
-		self._children.append(children_leaf)
+		children_leaf = Decision_tree_leaf(children_classification) 
+		self._children.append((children_leaf, children_data))
 
 	def childrens(self):
 		return _children
@@ -32,6 +31,7 @@ class Decision_tree_node (object):
 			return aux
 
 	def print(self, level):
-		print('-'*level + str(self.attribute) + ' / ' + str(self.data))
+		print(str(self.attribute))
 		for child in self._children:
-			child.print(level + 1)
+			print('-'*(level + 1) + str(child[1]) + ' / ', end='')
+			child[0].print(level + 1)
