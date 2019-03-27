@@ -3,17 +3,18 @@
 # -> agrego a la lista ese candidato
 # ordenar cada lista de cada atributo por ganancia
 # me quedocon los primeros n entradas de cada lista,donde n es el input del usuario o el largo de la lista si es menor al input del usuario
-#
 
 from data_set import DataSet
 from gain import Gain
 from operator import itemgetter
 
 class Generator (object):
+
 	def __init__(self):
+        pass
 
-
-	def generate_attributes_gaps(self, dataset, num_cut): # return -> listas de valores candidatos para cada atributo
+    # return -> listas de valores candidatos para cada atributo
+	def generate_attributes_gaps(self, dataset, num_cut): 
 		toggles = dataset.toggle_list()
 		_attributes = []
 		for att in range(dataset.cant_attributes):
@@ -31,6 +32,8 @@ class Generator (object):
 				_aux.append(_candidates)
 			for i in range(_aux.len()):
 				_attributes[att].append(_aux[i][0])
+
+            _attributes[att].sort()
 
 		return _attributes
 
