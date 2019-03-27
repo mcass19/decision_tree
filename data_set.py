@@ -1,8 +1,10 @@
+from __future__ import division
+import math
+
 class DataSet(object):
     
-    def __init__(self, data_id, continue_attributes):
-        self.data = self.load_data_set(data_id)
-        # self.target_values = self.load_target_values()
+    def __init__(self, continue_attributes):
+        self.data = []
         self.continue_attributes = continue_attributes
 
     # creación de estructura a partir del data_set
@@ -12,9 +14,12 @@ class DataSet(object):
         # esto es porque tenemos dos chances de data_set según la letra del ejercicio
         # se debe modificar si se quiere tener en cuenta otros data_sets
         if data_id == 1:
-            file_name = 'iris.data'
-            number_of_attributes = 4
-            number_of_lines = 150
+            file_name = 'example.data'
+            number_of_attributes = 5
+            number_of_lines = 4
+            # file_name = 'iris.data'
+            # number_of_attributes = 4
+            # number_of_lines = 150
         else:
             file_name = 'covtype.data'
             number_of_attributes = 54
@@ -23,11 +28,11 @@ class DataSet(object):
         with open(file_name, 'r') as file_to_read:
             for _ in range(number_of_lines):
                 aux = file_to_read.readline().split(',')
-                for i in range(number_of_attributes):
-                    aux[i] = float(aux[i])
+                # for i in range(number_of_attributes):
+                #     aux[i] = float(aux[i])
                 data.append(aux)
 
-        return data
+        self.data = data
 
     # retorna una lista con todas las posibles etiquetas
     def target_values(self):
@@ -41,6 +46,7 @@ class DataSet(object):
 
     # retorna el subconjunto de los valores que cumplen con value para el atributo de indice attr
     def subset_of_value(self, attr, base, max):
+        data_set_result = DataSet(self.continue_attributes)
         subset = []
         for instance in self.data:
             if ((attr in self.continue_attributes) and 
@@ -49,7 +55,8 @@ class DataSet(object):
             elif instance[attr] == base:
                 subset.append(instance)
 
-        return subset
+        data_set_result.data = subset
+        return data_set_result
 
     # retorna una lista con los indices para los cuales cambia el valor de la etiqueta
     def toggle_list(self):
@@ -63,37 +70,75 @@ class DataSet(object):
     
     def most_common_target_value(self, target_values):
         cant_tags = []
-        for _ in range(target_values.len()):
+        for _ in range(len(target_values)):
             cant_tags.append(0)
         
         instance = []
         for instance in self.data:
-            for i in range(target_values.len()):
+            for i in range(len(target_values)):
                 if instance[-1] == target_values[i]:
                     cant_tags[i] += 1 
-        
+
         return target_values[cant_tags.index(max(cant_tags))]
 
-    def entropy(self):
-        return 1
+    def entropy(self):      
+        entropy = 0
+        for target in self.cant_target_values():
+            entropy -= (target / len(self.data)) * math.log((target / len(self.data)), 2)
+
+        return entropy
+
+    def cant_target_values(self):
+        tar_values = self.target_values()
+        
+        proportions = []
+        for tar_val in range(len(tar_values)):
+            proportions.append(0)
+        
+        for data in self.data:
+            for tar_val in range(len(tar_values)):
+                if data[-1] == tar_values[tar_val]:
+                    proportions[tar_val] += 1 
+        
+        return proportions
 
     def max_gain_attribute(self, attributes):
         max_gain = 0
         index_attr = -1
-
-        for attr in range(attributes.len()):
+        
+        for attr in range(len(attributes)):
             gain = self.entropy()
             for value in attributes[attr]:
-                subset = self.subset_of_value(attr, value)
-                gain -= (subset.len() / self.cant_total_data) * self.calculate_entropy(subset)
+
+                subset = []
+                if (attributes[attr] in self.continue_attributes):
+                    if (value == attributes[attr][0]):
+                        subset = self.subset_of_value(attr, float('-inf'), value)
+                    elif (value == attributes[attr][-1]):
+                        subset = self.subset_of_value(attr, value, float('inf'))
+                    else:
+                       subset = self.subset_of_value(attr, value, attributes[attr][attributes[attr].index(value) + 1])
+                else:
+                    subset = self.subset_of_value(attr, value, -1)
+
+                gain -= (len(subset.data) / len(self.data)) * subset.entropy()
 
             if gain > max_gain: 
                 max_gain = gain
                 index_attr = attr
 
-        if index_attr != -1:
-            self.attributes_already_used.append(index_attr)
-
         return index_attr
+
+    def cant_attributes(self):
+        return (len(self.data[0]) - 1)
+
+    def attributes_value(self, att):
+        values = []
+        instance = []
+        for instance in self.data:
+            if instance[att] not in values:
+                values.append(instance[att]) 
+            
+        return values
 
     
