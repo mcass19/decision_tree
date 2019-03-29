@@ -13,35 +13,45 @@ class Generator(object):
 		pass
 
 	def generate_attributes(self, data_set, num_cut, continues_attributes): 
-		# toggles = data_set.toggle_list()
+		toggles = data_set.toggle_list()
 		cant_attributes = data_set.cant_attributes()
 		
-		_attributes = []
-
+		_attributes = []			
+		print(toggles)
 		for att in range(cant_attributes):
-			# if (att in continues_attributes):
-			# 	_candidates = []
-				
-			# 	for t in toggles:
-			# 		aux = float(data_set[t][att] + data_set[t + 1][att]) / 2
-			# 		aux_gain = gain.calculate_gain(att, aux)
-			# 		if not (aux, aux_gain) in _candidates:
-			# 			_candidates.append((aux, aux_gain))
-				
-			# 	sorted(_candidates, key=itemgetter(1))
+			if (att in continues_attributes):
+				_candidates = []
+				_aux = []
 
-			# 	if num_cut < _candidates.len():
-			# 		_aux.append( _candidates[(_candidates.len() - num_cut):])
-			# 	else:
-			# 		_aux.append(_candidates)
-			# 	for i in range(_aux.len()):
-			# 		_attributes[att].append(_aux[i][0])
+				for t in toggles:
+					aux_candidate = (data_set.data[t][att] + data_set.data[t + 1][att]) / 2
+					aux_gain = data_set.calculate_gain(att, aux_candidate)
+					if not (aux_candidate, aux_gain) in _candidates:
+						_candidates.append((aux_candidate, aux_gain))
+				
+				sorted(_candidates, key=itemgetter(1))
 
-			# 	_attributes[att].sort()
-			# else:
-				_attributes.append([])
+				if num_cut < len(_candidates):
+					_aux.append(_candidates[(len(_candidates) - num_cut):])
+				else:
+					_aux = _candidates.copy()
+				
+				_aux_list = []
+				for i in range(len(_aux)):
+					_aux_list.append(_aux[i][0])
+
+				_aux_list.sort()
+				_aux_final_list = []	
+				_aux_final_list.append((float('-inf'), _aux_list[0]))	
+				for i in range(len(_aux_list)-1):
+					_aux_final_list.append((_aux_list[i], _aux_list[i + 1]))	
+				_aux_final_list.append((_aux_list[-1], float('inf')))	
+				
+				_attributes.append(_aux_final_list)
+				# _attributes[att].sort()
+			else:
 				aux = data_set.attributes_value(att)
-				_attributes[att].append(aux)
+				_attributes.append(aux)
 
 		return _attributes
 

@@ -14,12 +14,12 @@ class DataSet(object):
         # esto es porque tenemos dos chances de data_set según la letra del ejercicio
         # se debe modificar si se quiere tener en cuenta otros data_sets
         if data_id == 1:
-            file_name = 'example.data'
-            number_of_attributes = 5
-            number_of_lines = 4
-            # file_name = 'iris.data'
-            # number_of_attributes = 4
-            # number_of_lines = 150
+            # file_name = 'example.data'
+            # number_of_attributes = 5
+            # number_of_lines = 4
+            file_name = 'iris.data'
+            number_of_attributes = 4
+            number_of_lines = 150
         else:
             file_name = 'covtype.data'
             number_of_attributes = 54
@@ -28,8 +28,9 @@ class DataSet(object):
         with open(file_name, 'r') as file_to_read:
             for _ in range(number_of_lines):
                 aux = file_to_read.readline().split(',')
-                # for i in range(number_of_attributes):
-                #     aux[i] = float(aux[i])
+                for i in self.continue_attributes:
+                    aux[i] = float(aux[i])
+                aux[-1] = aux[-1].replace('\n', '')
                 data.append(aux)
 
         self.data = data
@@ -45,14 +46,14 @@ class DataSet(object):
         return tags
 
     # retorna el subconjunto de los valores que cumplen con value para el atributo de indice attr
-    def subset_of_value(self, attr, base, max):
+    def subset_of_value(self, attr, value):
         data_set_result = DataSet(self.continue_attributes)
         subset = []
         for instance in self.data:
             if ((attr in self.continue_attributes) and 
-                ((instance[attr] > min and instance[attr] <= max))):
+                ((instance[attr] > value[0] and instance[attr] <= value[1]))):
                     subset.append(instance)
-            elif instance[attr] == base:
+            elif instance[attr] == value:
                 subset.append(instance)
 
         data_set_result.data = subset
@@ -61,10 +62,9 @@ class DataSet(object):
     # retorna una lista con los indices para los cuales cambia el valor de la etiqueta
     def toggle_list(self):
         indexes = []
-        instance = []
         for instance in range(len(self.data)):
-            if (instance != len(self.data)) and (self.data[instance][-1] != self.data[instance + 1][-1]):
-                indexes.append(instance[-1]) 
+            if (instance != (len(self.data)-1)) and (self.data[instance][-1] != self.data[instance + 1][-1]):
+                indexes.append(instance) 
         
         return indexes
     
@@ -102,24 +102,16 @@ class DataSet(object):
         
         return proportions
 
-    def max_gain_attribute(self, attributes):
+    def max_gain_attribute(self, attributes, attributes_aux):
         max_gain = 0
         index_attr = -1
-        
-        for attr in range(len(attributes)):
+
+        for attr in range(len(attributes_aux)):
             gain = self.entropy()
-            for value in attributes[attr]:
+            for value in attributes_aux[attr]:
 
                 subset = []
-                if (attributes[attr] in self.continue_attributes):
-                    if (value == attributes[attr][0]):
-                        subset = self.subset_of_value(attr, float('-inf'), value)
-                    elif (value == attributes[attr][-1]):
-                        subset = self.subset_of_value(attr, value, float('inf'))
-                    else:
-                       subset = self.subset_of_value(attr, value, attributes[attr][attributes[attr].index(value) + 1])
-                else:
-                    subset = self.subset_of_value(attr, value, -1)
+                subset = self.subset_of_value(attributes.index(attributes_aux[attr]), value)
 
                 gain -= (len(subset.data) / len(self.data)) * subset.entropy()
 
@@ -128,6 +120,14 @@ class DataSet(object):
                 index_attr = attr
 
         return index_attr
+    
+    def calculate_gain(self, att, value):
+        greater = self.subset_of_value(att, (value, float('inf')))
+        lower = self.subset_of_value(att, (float('-inf'), value))
+        gain = self.entropy() - ((len(greater.data) / len(self.data)) * greater.entropy()) - ((len(lower.data) / len(self.data)) * lower.entropy())
+
+        return gain
+        
 
     def cant_attributes(self):
         return (len(self.data[0]) - 1)
