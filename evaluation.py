@@ -19,8 +19,6 @@ class Evaluation(object):
 
 	def recursive_evaluate_tree(self, node, instance, data_set):
 		if(type(node) is DecisionTreeLeaf):
-			print('node.label ' + str(node.label) + ' instance[-1] ' +str(instance[-1]))
-			print('return ' + str(node.label == instance[-1]))
 			return node.label == instance[-1]
 		else:
 			for branch in node._branches:

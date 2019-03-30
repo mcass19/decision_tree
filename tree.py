@@ -11,7 +11,7 @@ class DecisionTreeNode(object):
 		self.attribute = att
 
 	def print(self, level):
-		print(str(self.attribute))
+		print('attribute ' + str(self.attribute))
 		for branch in self._branches:
 			branch.print(level + 1)
 
@@ -26,7 +26,7 @@ class DecisionTreeLeaf(object):
 		self.label = lab
 
 	def print(self, level):
-		print(self.label)
+		print('leaf ' + str(self.label))
 
 # ---------------------------------------------------------------------------
 
