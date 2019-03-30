@@ -11,7 +11,6 @@ class DataSet(object):
     # creación de estructura a partir del data_set
     def load_data_set(self, data_id, hot_vector):    
         data = []
-        data_test = []
 
         # esto es porque tenemos dos chances de data_set según la letra del ejercicio
         # se debe modificar si se quiere tener en cuenta otros data_sets y
@@ -83,12 +82,13 @@ class DataSet(object):
             data = data_aux.copy()
         
         # generar data_set_test
+        data_set_test = DataSet(self.continue_attributes)
         for _ in range(number_of_lines_test):
             index = random.randint(0, len(data) - 1)
-            data_test.append(data.pop(index))
+            data_set_test.data.append(data.pop(index))
 
         self.data = data
-        return data_test
+        return data_set_test
 
     # retorna una lista con todas las posibles etiquetas
     def target_values(self):
