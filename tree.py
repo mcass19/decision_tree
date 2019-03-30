@@ -1,18 +1,8 @@
-#from leaf import Decision_tree_leaf
-
-class Decision_tree_node (object):
+class DecisionTreeNode(object):
+	
 	def __init__ (self, attr):
 		self.attribute = attr
 		self._branches = []
-
-	# def add_children_node(self, children_attribute, children_data):
-	# 	children_node = Decision_tree_node(children_attribute)
-	# 	self._children.append((children_node, children_data))
-	# 	return children_node
-
-	# def add_children_leaf(self, children_data, children_classification):
-	# 	children_leaf = Decision_tree_leaf(children_classification) 
-	# 	self._children.append((children_leaf, children_data))
 
 	def add_branch(self, branch):
 		self._branches.append(branch)
@@ -25,7 +15,10 @@ class Decision_tree_node (object):
 		for branch in self._branches:
 			branch.print(level + 1)
 
-class Decision_tree_leaf (object):
+# ---------------------------------------------------------------------------
+
+class DecisionTreeLeaf(object):
+	
 	def __init__ (self, lab):
 		self.label = lab
 
@@ -35,7 +28,10 @@ class Decision_tree_leaf (object):
 	def print(self, level):
 		print(self.label)
 
-class Decision_tree_branch (object):
+# ---------------------------------------------------------------------------
+
+class DecisionTreeBranch(object):
+	
 	def __init__(self, val):
 		self.value = val
 		self.child = None
