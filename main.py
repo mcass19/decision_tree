@@ -1,6 +1,7 @@
 from data_set import DataSet
 from generate_attributes import Generator
 from id3 import Id3
+from evaluation import Evaluation
 
 print('*****************************')
 print('ARBOLES DE DECISION - ALGORITMO ID3')
@@ -25,7 +26,7 @@ if (option_hot_vector):
         hot_vector.append(int(a))
 
 data_set = DataSet(continue_attributes)
-data_set.load_data_set(float(option_data_set), hot_vector)
+data_set_test = data_set.load_data_set(float(option_data_set), hot_vector)
 
 generator = Generator()
 attributes = generator.generate_attributes(data_set, int(option_cant), continue_attributes)
@@ -34,5 +35,15 @@ id3 = Id3()
 attributes_aux = attributes.copy()
 tree = id3.generate_tree(data_set, attributes, attributes_aux)
 
+print('\n')
+
 print('Árbol generado:')
 tree.print(0)
+
+print('\n')
+
+evaluation = Evaluation()
+cant_classified, cant_not_classified = evaluation.evaluate_tree(tree, data_set_test)
+print('De las {} instancias tomadas para evaluar:'.format(cant_classified + cant_not_classified))
+print('\t -> {} instancias clasificaron correctamente'.format(cant_classified))
+print('\t -> {} instancias clasificaron incorrectamente'.format(cant_not_classified))

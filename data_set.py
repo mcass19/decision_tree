@@ -1,5 +1,6 @@
 from __future__ import division
 import math
+import random
 
 class DataSet(object):
     
@@ -10,15 +11,19 @@ class DataSet(object):
     # creación de estructura a partir del data_set
     def load_data_set(self, data_id, hot_vector):    
         data = []
+        data_test = []
 
         # esto es porque tenemos dos chances de data_set según la letra del ejercicio
-        # se debe modificar si se quiere tener en cuenta otros data_sets
+        # se debe modificar si se quiere tener en cuenta otros data_sets y
+        # si se quiere otro porcentaje para generar y evaluar el árbol -> por defecto 80/20
         if data_id == 1:
             file_name = 'iris.data'
             number_of_lines = 150
+            number_of_lines_test = 30
         else:
             file_name = 'covtype.data'
             number_of_lines = 1000
+            number_of_lines_test = 200
 
         with open(file_name, 'r') as file_to_read:
             for _ in range(number_of_lines):
@@ -76,8 +81,14 @@ class DataSet(object):
                         att += 1
                 data_aux.append(instance_aux)
             data = data_aux.copy()
+        
+        # generar data_set_test
+        for _ in range(number_of_lines_test):
+            index = random.randint(0, len(data) - 1)
+            data_test.append(data.pop(index))
 
         self.data = data
+        return data_test
 
     # retorna una lista con todas las posibles etiquetas
     def target_values(self):
@@ -190,5 +201,4 @@ class DataSet(object):
                 values.append(instance[att]) 
             
         return values
-
     

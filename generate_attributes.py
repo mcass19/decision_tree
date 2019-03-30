@@ -43,5 +43,3 @@ class Generator(object):
 				_attributes.append(aux)
 
 		return _attributes
-
-

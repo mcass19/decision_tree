@@ -42,3 +42,4 @@ class DecisionTreeBranch(object):
 	def print(self, level):
 		print("-"*level + str(self.value) + ' -> ',end='')
 		self.child.print(level + 1)
+		
