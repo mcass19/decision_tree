@@ -6,27 +6,33 @@ class DataSet(object):
     
     def __init__(self):
         self.data = []
-        self.continue_attributes = []
-        self.hot_vector = []
+        self.continue_attributes = [] # Indices de los atributos continuos
+        self.hot_vector = [] # Indices del comienzo y final de los hot vectors
 
-    # creación de estructura a partir del data_set
+    # Carga los datos de iris o covtype (dependiendo de la eleccion hecha por el usuario)
+    # a una lista, donde cada elemento de la lista es una instancia, representada como 
+    # una lista donde cada elemento e_i es el valor del atributo i para esa instancia y 
+    # el ultimo elemento de esta lista es la etiqueta de esa instancia.  
     def load_data_set(self, data_id):    
         data = []
 
-        # esto es porque tenemos dos chances de data_set según la letra del ejercicio
-        # se debe modificar si se quiere tener en cuenta otros data_sets y
-        # si se quiere otro porcentaje para generar y evaluar el árbol -> por defecto 80/20
+        # Esto es porque tenemos dos chances de data_set según la letra del ejercicio
+        # Si se quiere otro porcentaje para generar y evaluar el árbol  cambiar
+        # el valor de percentage -> por defecto 80 porciento es para generar y 
+        # 20 porciento para evaluar
         if data_id == 1:
             self.continue_attributes = [0, 1, 2, 3]
             file_name = 'iris.data'
             number_of_lines = 150
-            number_of_lines_test = math.floor(number_of_lines * 0.2)
+            percentage = 0.2
+            number_of_lines_test = math.floor(number_of_lines * percentage)
         else:
             self.continue_attributes = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
             self.hot_vector = [10, 13, 14, 53]
             file_name = 'covtype.data'
             number_of_lines = 581012
-            number_of_lines_test = math.floor(number_of_lines * 0.2)
+            percentage = 0.2
+            number_of_lines_test = math.floor(number_of_lines * percentage)
 
         with open(file_name, 'r') as file_to_read:
             for _ in range(number_of_lines):
@@ -36,7 +42,8 @@ class DataSet(object):
                 aux[-1] = aux[-1].replace('\n', '')
                 data.append(aux)
 
-        # reduce el data_set -> para cada hot_vector lo reduce a un atributo, 
+        # Calculo del hot vector
+        # Reduce el data_set -> para cada hot_vector lo reduce a un atributo, 
         # siendo 4 la máxima cantidad de clases para cada uno de estos
         data_aux = []
         if (len(self.hot_vector) != 0):
@@ -49,6 +56,7 @@ class DataSet(object):
                         cant_attributes = (hot_vector_aux[1] - hot_vector_aux[0]) + 1
                         cant_values = math.floor(cant_attributes / 4)
                         it = att
+
                         while it < (att + cant_attributes):
                             if (data[instance][it] == '1'):
                                 if (cant_values > 0):
@@ -61,8 +69,8 @@ class DataSet(object):
                                     else:
                                         instance_aux.append('3')
                                 else:
-                                    # aquí el hot_vector tiene dos o tres atributos 
-                                    # nota: si tiene uno sería un atributo discreto
+                                    # Aquí el hot_vector tiene dos o tres atributos 
+                                    # Nota: si tiene uno sería un atributo discreto
                                     if (cant_attributes == 2):
                                         if (it == att):
                                             instance_aux.append('0')
@@ -77,6 +85,7 @@ class DataSet(object):
                                             instance_aux.append('2')
                             it += 1
                         att += cant_attributes
+                        # Popea los dos indices entre los que se encuentra el hot vector
                         hot_vector_aux.pop(0)
                         hot_vector_aux.pop(0)
                     else:
@@ -85,14 +94,14 @@ class DataSet(object):
                 data_aux.append(instance_aux)
             data = data_aux.copy()
         
-        # generar data_set_test
+        # Genera data_set_test
         data_set_test = DataSet()
         data_set_test.set_continue_attributes(self.continue_attributes)
         for _ in range(number_of_lines_test):
             index = random.randint(0, len(data) - 1)
             data_set_test.data.append(data.pop(index))
 
-        # se reordena de forma aleatoria en cada ejecución
+        # Se reordena de forma aleatoria en cada ejecución
         random.shuffle(data)
 
         self.data = data
@@ -101,7 +110,7 @@ class DataSet(object):
     def set_continue_attributes(self, continue_attributes):
         self.continue_attributes = continue_attributes
     
-    # retorna una lista con todas las posibles etiquetas
+    # Retorna una lista con todas las posibles etiquetas del DataSet
     def target_values(self):
         tags = []
         instance = []
@@ -111,23 +120,26 @@ class DataSet(object):
             
         return tags
 
-    # retorna el subconjunto de los valores que cumplen con value para el atributo de indice attr
+    # Retorna el DataSet con las instancias donde los valores del atributo de indice attr son value
     def subset_of_value(self, attr, value):
         data_set_result = DataSet()
         data_set_result.set_continue_attributes(self.continue_attributes)
         subset = []
 
         for instance in self.data:
+            # Si es un atributo continuo compara entre los dos extremos
             if ((attr in self.continue_attributes) and 
                 ((instance[attr] > value[0] and instance[attr] <= value[1]))):
                     subset.append(instance)
+            # sino lo compara directamente
             elif instance[attr] == value:
                 subset.append(instance)
 
         data_set_result.data = subset
         return data_set_result
 
-    # retorna una lista con los indices para los cuales cambia el valor de la etiqueta
+    # Retorna una lista con los indices de las instancias e_i tal que e_i.etiqueta != e_(i + 1).etiqueta
+    # y que e_i no se encuentre ya en la lista (para no agregar repetidos)
     def toggle_list(self):
         indexes = [[],[]]
 
@@ -136,11 +148,11 @@ class DataSet(object):
             second = self.data[instance + 1][-1]
             if ((first != second) and ((first, second) not in indexes[1])):
                 indexes[0].append(instance)
-                indexes[1].append((first, second))
+                indexes[1].append((first, second)) # Guarda el cambio para asi no agregarlo de nuevo
         
         return indexes[0]
     
-    # retorna la etiqueta con mas apariciones en el data_set
+    # Retorna la etiqueta con mas apariciones en el data_set
     def most_common_target_value(self, target_values):
         cant_tags = []
         for _ in range(len(target_values)):
@@ -152,7 +164,7 @@ class DataSet(object):
 
         return target_values[cant_tags.index(max(cant_tags))]
 
-    # calcula la entropia del data_set
+    # Calcula la entropia del data_set
     def entropy(self):      
         entropy = 0
 
@@ -161,7 +173,7 @@ class DataSet(object):
 
         return entropy
 
-    # retorna una lista con la cantidad de apariciones de cada etiqueta
+    # Retorna una lista con la cantidad de apariciones de cada etiqueta
     def cant_target_values(self):
         tar_values = self.target_values()
         
@@ -175,7 +187,8 @@ class DataSet(object):
         
         return proportions
     
-    # retorna el data_set con las instancias de la clase label
+    # Retorna el DataSet con las instancias de la clase label
+    # , aquellas instancias donde la etiqueta asociada es label
     def data_set_class(self, label):
         data_set_class = DataSet()     
         data_set_class.set_continue_attributes(self.continue_attributes)
@@ -186,7 +199,8 @@ class DataSet(object):
         
         return data_set_class
 
-    # retorna el atributo con mayor ganancia
+    # Retorna el atributo con mayor ganancia de la lista attributes_aux
+    # attributes se utiliza para no perder el indice original de los atributos
     def max_gain_attribute(self, attributes, attributes_aux):
         max_gain = 0
         index_attr = -1
@@ -205,7 +219,7 @@ class DataSet(object):
 
         return index_attr
     
-    # retorna la ganancia para el punto de corte value del atributo continuo con indice att
+    # Retorna la ganancia para el punto de corte value del atributo continuo con indice att
     def calculate_gain(self, att, value):
         greater = self.subset_of_value(att, (value, float('inf')))
         lower = self.subset_of_value(att, (float('-inf'), value))
@@ -213,11 +227,11 @@ class DataSet(object):
 
         return gain
         
-    # retorna la cantidad de atributos del data_set
+    # Retorna la cantidad de atributos del data_set
     def cant_attributes(self):
         return (len(self.data[0]) - 1)
 
-    # retorna todos los posibles valores de un atributo
+    # Retorna una lista con todos los valores que toma el atributo att
     def attributes_value(self, att):
         values = []
 

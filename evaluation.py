@@ -4,6 +4,9 @@ class Evaluation(object):
 	def __init__(self):
 		pass
 
+	# Retorna la tupla (cant_classified, cant_not_classified) donde
+	# cant_classified es la cantidad de instancias del data_set que
+	# clasificaron , y cant_not_classified las que no
 	def evaluate_tree(self, tree, data_set):
 		cant_classified = 0
 		cant_not_classified = 0
@@ -17,6 +20,10 @@ class Evaluation(object):
 
 		return cant_classified, cant_not_classified
 
+	# Recorre el arbol recursivamente, eligiendo las ramas que evaluan
+	# el atributo de su nodo en instance. Si llega a una hoja devuelve
+	# verdadero si la etiqueta es la misma que la de instance, falso
+	# en caso contrario 
 	def recursive_evaluate_tree(self, node, instance, data_set):
 		if(type(node) is DecisionTreeLeaf):
 			return node.label == instance[-1]
@@ -31,21 +38,29 @@ class Evaluation(object):
 					return self.recursive_evaluate_tree(branch.child, instance, data_set)
 
 
+	# Devuelve una matriz (lista de listas) de confusion para data_set y 
+	# la lista de arboles de clase classes_trees
 	def confusion_matrix(self, data_set, classes_trees):
 		target_values = data_set.target_values()
+		# Evaluations es una lista donde cada elemento es una tupla
+		# (instancia, etiqueta), donde instancia es la instancia que evaluo
+		# el arbol y etiqueta la etiqueta del arbol que mejor clasifico a 
+		# esa instancia
 		evaluations = []
 		for instance in data_set.data:
 			best_evaluation = (-1,float('inf'))
 			for tree in classes_trees:
 				aux = self.evaluate_tree_class(tree[1], instance, data_set)
+				# Aca es donde selecciona el arbol que menos ramas preciso para
+				# llegar a True
 				if (aux[0] and  best_evaluation[1] > aux[1]):
 					best_evaluation = (classes_trees.index(tree), aux[1])
+			# Agrega la instancia y la etiqueta del arbol que mejor clasifico
 			evaluations.append((instance, classes_trees[best_evaluation[0]][0]))
 
 		confusion_matrix = []
-		cant_labels = len(target_values)
 		for label in target_values:
-			row = [0]*cant_labels
+			row = [0]*len(target_values)
 			for e in evaluations:
 				if e[0][-1] == label:
 					row[target_values.index(e[1])] += 1
@@ -53,8 +68,9 @@ class Evaluation(object):
 		return confusion_matrix
 
 
-	#devuelvo true o false y la cantidad de pasos
-	# El tree tiene en sus hojas verdadero o falso
+	# Devuelve la tupla (clasificacion, pasos) donde clasificacion es la hoja 
+	# que clasifico al arbol tree_class (True o False) y pasos la cantidad de
+	# nodos que recorrio para llegar a la hoja
 	def evaluate_tree_class(self, tree_class, instance, data_set):
 		if type(tree_class) is DecisionTreeLeaf:
 			return (tree_class.label, 1)

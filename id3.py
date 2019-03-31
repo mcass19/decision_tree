@@ -5,6 +5,9 @@ class Id3(object):
 	def __init__(self):
 		pass
 
+	# Devuelve el arbol de decision para data_set, con los atributos 
+	# attributes_aux. attributes se utiliza para no perder el indice 
+	# original de los atributos
 	def generate_tree(self, data_set, attributes, attributes_aux):
 		attr = data_set.max_gain_attribute(attributes, attributes_aux)
 
@@ -36,6 +39,8 @@ class Id3(object):
 
 		return root
 
+	# Devuelve el arbol de clase de data_set para la etiqueta target y los atributos attributes_aux.  
+	# attributes se utiliza para no perder el indice original de los atributos
 	def generate_class_tree(self, data_set, target, attributes, attributes_aux):
 		attr = data_set.max_gain_attribute(attributes, attributes_aux)
 
