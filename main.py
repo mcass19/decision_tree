@@ -42,12 +42,20 @@ print('\t -> {} instancias clasificaron incorrectamente'.format(cant_not_classif
 print('\n')
 
 print('Árboles de clases generados: ')
+
+classes_trees = []
+
 for label in data_set.target_values():
     data_set_class = data_set.data_set_class(label)
     attributes_aux = attributes.copy()
     tree = id3.generate_class_tree(data_set_class, label, attributes, attributes_aux)
+    classes_trees.append((label ,tree))
     print('Clase: ' + str(label))
     tree.print(0)
     print('\n')
 
-# FALTA ACA -> EVALUACION Y VOTACION DE LOS ARBOLES DE CLASES
+confusion_matrix = evaluation.confusion_matrix(data_set_test, classes_trees)
+
+for i in confusion_matrix:
+	print(str(i))
+
