@@ -6,12 +6,12 @@ class Generator(object):
 	def __init__(self):
 		pass
 
-	# Devuelve una lista donde cada elemento a_i es una lista de valores que
+	# Devuelve una lista donde cada elemento attributes[i] es una lista de valores que
 	# puede tomar el atributo i. Para los valores continuos, los elementos de 
-	# a_i van a ser tuplas. num_cut es la cantidad de cortes que ingresa
-	# el usuario
+	# attributes[i] van a ser tuplas 
+	# num_cut es la cantidad de cortes que ingresa el usuario
 	def generate_attributes(self, data_set, num_cut, continues_attributes): 
-		# Lista de indices en el que existe un cambio de etiqueta en data_set
+		# Lista de indices en el que existe un cambio de clase en data_set
 		toggles = data_set.toggle_list() 
 		
 		attributes = []			
@@ -30,8 +30,8 @@ class Generator(object):
 				# Ordena los candidatos por ganancia
 				sorted(candidates, key=itemgetter(1))
 
-				# Si la cantidad de candidatos se excede a la cantidad que me pidio
-				# el usuario como limite, me quedo con num_cut candidatos
+				# Si la cantidad de candidatos se excede a la cantidad que me brindó
+				# el usuario como límite, me quedo con num_cut candidatos
 				if num_cut < len(candidates):
 					candidates = candidates[(len(candidates) - num_cut):]
 				
@@ -48,7 +48,7 @@ class Generator(object):
 					candidates.append((_onlycandidates[i], _onlycandidates[i + 1]))	
 				candidates.append((_onlycandidates[-1], float('inf')))	
 				
-				# Agrego la lista de valores para el atributo numero att a la lista final
+				# Agrego la lista de valores para el atributo att a la lista final
 				attributes.append(candidates)
 			else:
 				aux = data_set.attributes_value(att)

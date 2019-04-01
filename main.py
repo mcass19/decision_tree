@@ -3,15 +3,17 @@ from generate_attributes import Generator
 from id3 import Id3
 from evaluation import Evaluation
 
-print('*****************************')
+print('*****************************************')
 print('ARBOLES DE DECISION - ALGORITMO ID3')
-print('*****************************')
+print('*****************************************')
 
 option_data_set = input('Ingrese 1 para generar un árbol a partir del data set Iris \no 2 para generar un árbol a partir del data set Covtype: ')
 option_cant = input('Ingrese la cantidad de puntos de corte para los atributos continuos: ')
 
+print('\n')
+
 data_set = DataSet()
-data_set_test = data_set.load_data_set(float(option_data_set))
+data_set_test = data_set.load_data_set(int(option_data_set))
 
 print('Generó dataset')
 
@@ -53,6 +55,8 @@ for label in data_set.target_values():
     print('Clase: ' + str(label))
     tree.print(0)
     print('\n')
+
+print('Matriz de confusión: ')
 
 confusion_matrix = evaluation.confusion_matrix(data_set_test, classes_trees)
 

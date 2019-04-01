@@ -11,13 +11,13 @@ class DataSet(object):
 
     # Carga los datos de iris o covtype (dependiendo de la eleccion hecha por el usuario)
     # a una lista, donde cada elemento de la lista es una instancia, representada como 
-    # una lista donde cada elemento e_i es el valor del atributo i para esa instancia y 
-    # el ultimo elemento de esta lista es la etiqueta de esa instancia.  
+    # una lista donde cada elemento instance[i] es el valor del atributo i para esa instancia y 
+    # el ultimo elemento de esta lista es la etiqueta de esa instancia  
     def load_data_set(self, data_id):    
         data = []
 
         # Esto es porque tenemos dos chances de data_set según la letra del ejercicio
-        # Si se quiere otro porcentaje para generar y evaluar el árbol  cambiar
+        # Si se quiere otro porcentaje para generar y evaluar el árbol, cambiar
         # el valor de percentage -> por defecto 80 porciento es para generar y 
         # 20 porciento para evaluar
         if data_id == 1:
@@ -42,7 +42,7 @@ class DataSet(object):
                 aux[-1] = aux[-1].replace('\n', '')
                 data.append(aux)
 
-        # Calculo del hot vector
+        # Hot vector
         # Reduce el data_set -> para cada hot_vector lo reduce a un atributo, 
         # siendo 4 la máxima cantidad de clases para cada uno de estos
         data_aux = []
@@ -139,7 +139,7 @@ class DataSet(object):
         return data_set_result
 
     # Retorna una lista con los indices de las instancias e_i tal que e_i.etiqueta != e_(i + 1).etiqueta
-    # y que e_i no se encuentre ya en la lista (para no agregar repetidos)
+    # y también que e_i no se encuentre ya en la lista (para no agregar repetidos)
     def toggle_list(self):
         indexes = [[],[]]
 
@@ -154,9 +154,7 @@ class DataSet(object):
     
     # Retorna la etiqueta con mas apariciones en el data_set
     def most_common_target_value(self, target_values):
-        cant_tags = []
-        for _ in range(len(target_values)):
-            cant_tags.append(0)
+        cant_tags = [0] * len(target_values)
         
         for instance in self.data:
             if (instance[-1] in target_values):
@@ -176,10 +174,7 @@ class DataSet(object):
     # Retorna una lista con la cantidad de apariciones de cada etiqueta
     def cant_target_values(self):
         tar_values = self.target_values()
-        
-        proportions = []
-        for _ in range(len(tar_values)):
-            proportions.append(0)
+        proportions = [0] * len(tar_values)
         
         for instance in self.data:
             if (instance[-1] in tar_values):
@@ -187,8 +182,7 @@ class DataSet(object):
         
         return proportions
     
-    # Retorna el DataSet con las instancias de la clase label
-    # , aquellas instancias donde la etiqueta asociada es label
+    # Retorna el DataSet con aquellas instancias donde la etiqueta asociada es label
     def data_set_class(self, label):
         data_set_class = DataSet()     
         data_set_class.set_continue_attributes(self.continue_attributes)
